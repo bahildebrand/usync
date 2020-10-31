@@ -11,7 +11,7 @@ use panic_semihosting as _; // logs messages to the host stderr; requires a debu
 use cortex_m_rt::entry;
 use cortex_m_semihosting::hprintln;
 use alloc_cortex_m::CortexMHeap;
-use task::{Task, executor::Executor};
+use task::executor::Executor;
 
 #[global_allocator]
 static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
@@ -24,15 +24,20 @@ fn main() -> ! {
     unsafe { ALLOCATOR.init(start, size) }
 
     let mut executor = Executor::new();
-    executor.spawn(Task::new(task1()));
-    executor.spawn(Task::new(task2()));
+    executor.spawn(task1());
+    executor.spawn(task2());
     executor.run();
 }
 
 async fn task1() {
     hprintln!("task1").unwrap();
+    hello_from_task1().await;
 }
 
 async fn task2() {
     hprintln!("task2").unwrap();
+}
+
+async fn hello_from_task1() {
+    hprintln!("Hello from task 1").unwrap();
 }

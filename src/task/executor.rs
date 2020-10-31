@@ -1,6 +1,9 @@
 use super::{Task, TaskId};
 use alloc::{collections::BTreeMap, sync::Arc, task::Wake};
-use core::task::{Context, Poll, Waker};
+use core::{
+    future::Future,
+    task::{Context, Poll, Waker}
+};
 use crossbeam_queue::ArrayQueue;
 use cortex_m::{interrupt, asm};
 
@@ -19,7 +22,8 @@ impl Executor {
         }
     }
 
-    pub fn spawn(&mut self, task: Task) {
+    pub fn spawn(&mut self, future: impl Future<Output = ()> + 'static) {
+        let task = Task::new(future);
         let task_id = task.id;
         if self.tasks.insert(task.id, task).is_some() {
             panic!("task with same ID already in tasks");
