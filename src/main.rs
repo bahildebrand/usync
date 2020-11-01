@@ -16,11 +16,15 @@ use crate::hal::{
 
 use panic_semihosting as _; // logs messages to the host stderr; requires a debugger
 
-use cortex_m_rt::entry;
+use cortex_m_rt::{entry, exception, ExceptionFrame};
 use cortex_m_semihosting::hprintln;
 use alloc_cortex_m::CortexMHeap;
 use task::executor::Executor;
-use timer::{enable_timer, sleep_ms, get_time_ms};
+use timer::{
+    enable_timer,
+    get_time_ms,
+    sleep::sleep_ms
+};
 
 #[global_allocator]
 static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
@@ -42,8 +46,7 @@ fn main() -> ! {
 }
 
 fn init_clocks() {
-    let sys_clk_mhz = 84;
-
+    let sys_clk_mhz = 168;
 
     let periphs = Peripherals::take().unwrap();
     let rcc = periphs.RCC.constrain();
@@ -68,4 +71,16 @@ async fn sleep_task() {
 
 async fn hello_from_task1() {
     hprintln!("Hello from task 1").unwrap();
+}
+
+#[exception]
+fn HardFault(ef: &ExceptionFrame) -> ! {
+    hprintln!("Hardfault: {:?}", ef).unwrap();
+
+    loop {}
+}
+
+#[exception]
+fn DefaultHandler(irqn: i16) {
+    hprintln!("Interrupt fired: {}", irqn).unwrap();
 }
