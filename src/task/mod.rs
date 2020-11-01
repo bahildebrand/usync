@@ -7,14 +7,15 @@ use core::{
 };
 
 pub mod executor;
+pub(crate) mod waker;
 
-pub struct Task {
+pub(crate) struct Task {
     id: TaskId,
     future: Pin<Box<dyn Future<Output = ()>>>,
 }
 
 impl Task {
-    pub fn new(future: impl Future<Output = ()> + 'static) -> Task {
+    pub(crate) fn new(future: impl Future<Output = ()> + 'static) -> Task {
         Task {
             id: TaskId::new(),
             future: Box::pin(future),
@@ -27,7 +28,7 @@ impl Task {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct TaskId(u32);
+pub(crate) struct TaskId(u32);
 
 impl TaskId {
     fn new() -> Self {
