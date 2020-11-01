@@ -70,8 +70,8 @@ impl Executor {
     fn sleep_if_idle(&self) {
         interrupt::disable();
         if self.task_queue.is_empty() {
-            unsafe { interrupt::enable(); }
             asm::wfe();
+            unsafe { interrupt::enable(); }
         } else {
             unsafe { interrupt::enable(); }
         }
