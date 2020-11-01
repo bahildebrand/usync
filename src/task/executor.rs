@@ -8,6 +8,17 @@ use crossbeam_queue::ArrayQueue;
 use cortex_m::{interrupt, asm};
 use super::waker::TaskWaker;
 
+/// Exectuor for all spawned tasks.
+///
+/// # Examples
+///
+/// Creating an executor and running a simple task:
+/// ```
+/// use task::executor::Executor;
+///
+/// let mut executor = Executor::new();
+/// executor.run();
+/// ```
 pub struct Executor {
     tasks: BTreeMap<TaskId, Task>,
     task_queue: Arc<ArrayQueue<TaskId>>,
@@ -15,6 +26,8 @@ pub struct Executor {
 }
 
 impl Executor {
+    /// Creates a new executor. Currently there is only support for single
+    /// threaded environments.
     pub fn new() -> Self {
         Executor {
             tasks: BTreeMap::new(),
@@ -23,6 +36,8 @@ impl Executor {
         }
     }
 
+    /// Spawns a task from a provided future. The future must not have an output
+    /// type as this is intended to be a top level task.
     pub fn spawn(&mut self, future: impl Future<Output = ()> + 'static) {
         let task = Task::new(future);
         let task_id = task.get_id();
@@ -32,6 +47,8 @@ impl Executor {
         self.task_queue.push(task_id).expect("queue full");
     }
 
+    /// Executes all tasks previously spawned. This function will loop through
+    /// all tasks and attempt to sleep if there is no work to be done.
     pub fn run(&mut self) -> ! {
         loop {
             self.run_ready_tasks();
@@ -39,6 +56,7 @@ impl Executor {
         }
     }
 
+    #[doc(hidden)]
     fn run_ready_tasks(&mut self) {
         // destructure `self` to avoid borrow checker errors
         let Self {
@@ -67,6 +85,7 @@ impl Executor {
         }
     }
 
+    #[doc(hidden)]
     fn sleep_if_idle(&self) {
         interrupt::disable();
         if self.task_queue.is_empty() {
