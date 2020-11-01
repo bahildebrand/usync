@@ -56,11 +56,8 @@ fn SysTick() {
         let queue = TIMER_QUEUE
                     .try_get()
                     .expect("Queue not initialized");
-        match queue.pop() {
-            Some(timer) => {
-                let _ = TIMER_HEAP.push(timer);
-            },
-            None => {}
+        while let Some(timer) = queue.pop() {
+            let _ = TIMER_HEAP.push(timer);
         }
 
         while let Some(timer) = TIMER_HEAP.peek() {

@@ -41,7 +41,7 @@ fn main() -> ! {
     let mut executor = Executor::new();
     executor.spawn(task1());
     executor.spawn(task2());
-    executor.spawn(sleep_task());
+    executor.spawn(task3());
     executor.run();
 }
 
@@ -56,21 +56,21 @@ fn init_clocks() {
 }
 
 async fn task1() {
-    hello_from_task1().await;
+    hprintln!("Task1 start: {}", get_time_ms()).unwrap();
+    sleep_ms(50).await;
+    hprintln!("Task1 end: {}", get_time_ms()).unwrap();
 }
 
 async fn task2() {
-    hprintln!("Hello from task 2").unwrap();
+    hprintln!("Task2 start: {}", get_time_ms()).unwrap();
+    sleep_ms(25).await;
+    hprintln!("Task2 end: {}", get_time_ms()).unwrap();
 }
 
-async fn sleep_task() {
-    hprintln!("Task start: {}", get_time_ms()).unwrap();
+async fn task3() {
+    hprintln!("Task3 start: {}", get_time_ms()).unwrap();
     sleep_ms(100).await;
-    hprintln!("Task end: {}", get_time_ms()).unwrap();
-}
-
-async fn hello_from_task1() {
-    hprintln!("Hello from task 1").unwrap();
+    hprintln!("Task3 end: {}", get_time_ms()).unwrap();
 }
 
 #[exception]
