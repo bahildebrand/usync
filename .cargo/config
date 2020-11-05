@@ -1,6 +1,6 @@
 [target.thumbv7em-none-eabi]
 # uncomment this to make `cargo run` execute programs on QEMU
-runner = "qemu-system-gnuarmeclipse --board STM32F4-Discovery -nographic -semihosting-config enable=on,target=native -kernel"
+runner = "renode renode/stm32f4.resc"
 
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
 # uncomment ONE of these three option to make `cargo run` start a GDB session

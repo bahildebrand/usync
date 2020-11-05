@@ -1,0 +1,14 @@
+# Filename: renode-config.resc
+$bin?=@target/thumbv7em-none-eabi/debug/usync
+
+# Create Machine & Load config
+mach create
+machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
+machine LoadPlatformDescription @renode/add-ccm.repl
+
+macro reset
+"""
+    sysbus LoadELF $bin
+"""
+
+runMacro $reset
