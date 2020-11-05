@@ -1,7 +1,8 @@
 use conquer_once::spin::OnceCell;
 use cortex_m::{
     Peripherals,
-    peripheral::syst::SystClkSource
+    peripheral::syst::SystClkSource,
+    interrupt
 };
 
 use cortex_m_rt::exception;
@@ -37,10 +38,12 @@ pub fn enable_timer(hertz: u32) {
 
 pub(crate) fn timer_queue_push(timer: TimerWaker) {
     unsafe {
+        interrupt::disable();
         let queue = TIMER_QUEUE
                 .try_get()
                 .expect("Queue not initialized");
         let _ = queue.push(timer);
+        interrupt::enable();
     }
 }
 
@@ -51,8 +54,8 @@ pub fn get_time_ms() -> u64 {
 #[exception]
 fn SysTick() {
     unsafe {
+        interrupt::disable();
         COUNT += 1;
-
         let queue = TIMER_QUEUE
                     .try_get()
                     .expect("Queue not initialized");
@@ -66,5 +69,6 @@ fn SysTick() {
                 let _ = TIMER_HEAP.pop();
             }
         }
+        interrupt::enable();
     }
 }
