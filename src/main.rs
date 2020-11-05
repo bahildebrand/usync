@@ -25,6 +25,8 @@ use timer::{
     get_time_ms,
     sleep::sleep_ms
 };
+use stm32f4xx_hal::{stm32::USART2, serial::{Serial, config::Config, Tx}};
+use core::fmt::Write; // for pretty formatting of the serial output
 
 #[global_allocator]
 static ALLOCATOR: CortexMHeap = CortexMHeap::empty();
@@ -36,41 +38,46 @@ fn main() -> ! {
     let size = 50 * 1024; // in bytes
     unsafe { ALLOCATOR.init(start, size) }
 
-    init_clocks();
+    let tx = init_usart2();
 
     let mut executor = Executor::new();
-    executor.spawn(task1());
-    executor.spawn(task2());
-    executor.spawn(task3());
+    executor.spawn(sleep_task(tx));
     executor.run();
 }
 
-fn init_clocks() {
+fn init_usart2() -> Tx<USART2> {
+    let periphs = Peripherals::take().unwrap();
     let sys_clk_mhz = 168;
 
-    let periphs = Peripherals::take().unwrap();
     let rcc = periphs.RCC.constrain();
-    let _clocks = rcc.cfgr.sysclk(sys_clk_mhz.mhz()).freeze();
+    let clocks = rcc.cfgr.sysclk(sys_clk_mhz.mhz()).freeze();
 
     enable_timer(sys_clk_mhz * 1000 * 1000);
+
+    let gpioa = periphs.GPIOA.split();
+    let tx_pin = gpioa.pa2.into_alternate_af7();
+    let rx_pin = gpioa.pa3.into_alternate_af7();
+
+    // configure serial
+    let serial = Serial::usart2(
+        periphs.USART2,
+        (tx_pin, rx_pin),
+        Config::default().baudrate(115200.bps()),
+        clocks,
+    )
+    .unwrap();
+
+    let (tx, mut _rx) = serial.split();
+
+    tx
 }
 
-async fn task1() {
-    hprintln!("Task1 start: {}", get_time_ms()).unwrap();
+async fn sleep_task(mut tx: Tx<USART2>) {
+    writeln!(tx, "Task1 start: {}\r", get_time_ms()).unwrap();
     sleep_ms(50).await;
-    hprintln!("Task1 end: {}", get_time_ms()).unwrap();
-}
-
-async fn task2() {
-    hprintln!("Task2 start: {}", get_time_ms()).unwrap();
-    sleep_ms(25).await;
-    hprintln!("Task2 end: {}", get_time_ms()).unwrap();
-}
-
-async fn task3() {
-    hprintln!("Task3 start: {}", get_time_ms()).unwrap();
+    writeln!(tx, "Task1 end: {}\r", get_time_ms()).unwrap();
     sleep_ms(100).await;
-    hprintln!("Task3 end: {}", get_time_ms()).unwrap();
+    writeln!(tx, "Task1 end: {}\r", get_time_ms()).unwrap();
 }
 
 #[exception]

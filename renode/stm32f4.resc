@@ -6,6 +6,8 @@ mach create
 machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
 machine LoadPlatformDescription @renode/add-ccm.repl
 
+showAnalyzer sysbus.uart2
+
 macro reset
 """
     sysbus LoadELF $bin
