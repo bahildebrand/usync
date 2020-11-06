@@ -3,9 +3,6 @@
 #![feature(wake_trait)]
 #![feature(default_alloc_error_handler)]
 
-mod task;
-mod timer;
-
 extern crate alloc;
 
 use stm32f4xx_hal as hal;
@@ -19,8 +16,8 @@ use panic_semihosting as _; // logs messages to the host stderr; requires a debu
 use cortex_m_rt::{entry, exception, ExceptionFrame};
 use cortex_m_semihosting::hprintln;
 use alloc_cortex_m::CortexMHeap;
-use task::executor::Executor;
-use timer::{
+use usync::task::executor::Executor;
+use usync::timer::{
     enable_timer,
     get_time_ms,
     sleep::sleep_ms

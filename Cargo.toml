@@ -32,7 +32,7 @@ version = "0.8.3"
 features = ["stm32f407"]
 
 # this lets you use `cargo fix`!
-[[bin]]
+[lib]
 name = "usync"
 test = false
 bench = false

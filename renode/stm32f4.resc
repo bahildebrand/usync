@@ -1,5 +1,5 @@
 # Filename: renode-config.resc
-$bin?=@target/thumbv7em-none-eabi/debug/usync
+$bin?=@target/thumbv7em-none-eabihf/debug/examples/uart_timer
 
 # Create Machine & Load config
 mach create
@@ -11,6 +11,7 @@ showAnalyzer sysbus.uart2
 macro reset
 """
     sysbus LoadELF $bin
+    start
 """
 
 runMacro $reset

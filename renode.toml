@@ -1,0 +1,16 @@
+[tasks.build]
+command = "cargo"
+args = [
+    "build",
+    "--example",
+    "${@}"]
+
+[tasks.renode]
+command = "renode"
+args = [
+    "renode/stm32f4.resc"
+]
+dependencies = ["build"]
+
+[tasks.run]
+dependencies = ["renode"]
