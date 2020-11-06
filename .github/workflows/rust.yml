@@ -16,6 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Configure rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        target: thumbv7em-none-eabihf
     - name: Build
       run: cargo build --verbose
     - name: Run tests
