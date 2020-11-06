@@ -21,7 +21,9 @@ jobs:
       with:
         toolchain: nightly
         target: thumbv7em-none-eabihf
+        override: true
     - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+
