@@ -5,12 +5,17 @@ args = [
     "--example",
     "${@}"]
 
+[tasks.renode-bin]
+script = [
+    "echo '$bin?'=@target/thumbv7em-none-eabihf/debug/examples/${@} > target/renode-bin.resc"
+]
+
 [tasks.renode]
 command = "renode"
 args = [
     "renode/stm32f4.resc"
 ]
-dependencies = ["build"]
+dependencies = ["build", "renode-bin"]
 
 [tasks.run]
 dependencies = ["renode"]
