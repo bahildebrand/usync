@@ -16,14 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Configure rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly
-        target: thumbv7em-none-eabihf
-        override: true
-    - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-
+    - name: Build container
+      run: docker build . -t renode
+    - name: Run tests
+      run: docker run renode
