@@ -1,0 +1,1 @@
+renode-test -t integration-tests/tests.yaml
