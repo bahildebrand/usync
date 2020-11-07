@@ -46,3 +46,11 @@ debugger. To quickly run an example in renode run the following command:
 ```
 cargo make --makefile renode.toml run <example_name>
 ```
+
+### Running Integration Tests
+Integration tests are all written in the
+[Robot Framework](https://robotframework.org/), and can be run with the
+following command
+```
+cargo make --makefile renode.toml test <test-name>
+```

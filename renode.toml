@@ -10,12 +10,18 @@ script = [
     "echo '$bin?'=@target/thumbv7em-none-eabihf/debug/examples/${@} > target/renode-bin.resc"
 ]
 
-[tasks.renode]
+[tasks.run]
 command = "renode"
 args = [
     "renode/stm32f4.resc"
 ]
 dependencies = ["build", "renode-bin"]
 
-[tasks.run]
-dependencies = ["renode"]
+[tasks.test]
+command = "renode-test"
+args = [
+    "integration-tests/${@}.robot",
+    "-r",
+    "test-results"
+]
+dependencies = ["build"]
