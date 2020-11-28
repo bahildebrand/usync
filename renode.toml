@@ -5,6 +5,13 @@ args = [
     "--example",
     "${@}"]
 
+[tasks.build-all]
+command = "cargo"
+args = [
+    "build",
+    "--examples"
+]
+
 [tasks.renode-bin]
 script = [
     "echo '$bin?'=@target/thumbv7em-none-eabihf/debug/examples/${@} > target/renode-bin.resc"
@@ -25,3 +32,13 @@ args = [
     "test-results"
 ]
 dependencies = ["build"]
+
+[tasks.tests]
+command = "renode-test"
+args = [
+    "-t",
+    "integration-tests/tests.yaml",
+    "-r",
+    "test-results"
+]
+dependencies = ["build-all"]
