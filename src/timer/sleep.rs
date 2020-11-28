@@ -17,7 +17,7 @@ impl Sleep {
     /// # Arguements
     ///
     /// * `duration_ms` - The time in ms that the task needs to yield.
-    pub fn new(duration_ms: u64) -> Sleep{
+    pub fn new(duration_ms: u64) -> Sleep {
         Sleep {
             time_ms: get_time_ms() + duration_ms
         }

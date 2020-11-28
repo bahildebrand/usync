@@ -1,1 +1,2 @@
 - integration-tests/uart_timer.robot
+- integration-tests/uart_periodic.robot
